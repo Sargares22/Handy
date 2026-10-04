@@ -234,6 +234,11 @@ fn start_display_watcher(app_handle: &AppHandle) {
                 place(&inner, &window, None);
                 return;
             }
+            // Windows can drop a topmost window behind normal ones even though
+            // the always-on-top flag is still set (see overlay.rs), so keep
+            // re-asserting the Z-order while the button is shown.
+            #[cfg(target_os = "windows")]
+            force_topmost(&window);
             let Ok(Some(monitor)) = inner.primary_monitor() else {
                 return;
             };
